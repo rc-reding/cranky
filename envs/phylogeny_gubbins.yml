@@ -1,0 +1,18 @@
+name: phylogeny_gubbins
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - r
+dependencies:
+  - gubbins=3.3.5
+  - mafft
+  - ete3
+  - qt
+  - pyqt
+  - matplotlib
+  - numpy
+  - pyparsing
+  - snp-dists
+  - python
+  - biopython

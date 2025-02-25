@@ -1,0 +1,11 @@
+name: variant_calling
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - clair3
+  - python==3.9
+  - samtools
+  - bioconda::bcftools
+  - conda-forge::ncurses

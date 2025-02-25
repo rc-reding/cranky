@@ -1,0 +1,10 @@
+name: genome_alignments
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+dependencies:
+ - python
+ - bioconda::bcftools
+ - biopython
+ - mafft

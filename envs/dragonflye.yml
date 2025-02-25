@@ -1,0 +1,14 @@
+name: dragonflye
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - dragonflye
+  - medaka
+  - bwa
+  - conda-forge::ncurses
+  - gsl
+  - bioconda::bcftools
+  - openblas
+  - python

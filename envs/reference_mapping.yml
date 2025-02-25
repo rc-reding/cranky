@@ -1,0 +1,10 @@
+name: reference_mapping
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+dependencies:
+  - minimap2>=2.25
+  - samtools
+  - conda-forge::ncurses
+  - python

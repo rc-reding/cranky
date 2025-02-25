@@ -1,0 +1,8 @@
+name: quality_control
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  - NanoPlot

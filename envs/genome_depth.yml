@@ -1,0 +1,10 @@
+name: genome_depth
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - pandas
+  - numpy
+  - samtools
+  - python==3.9

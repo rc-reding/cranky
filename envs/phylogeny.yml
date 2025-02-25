@@ -1,0 +1,9 @@
+name: phylogeny
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  - raxml
+  - clonalframeml

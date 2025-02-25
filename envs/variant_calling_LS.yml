@@ -1,0 +1,11 @@
+name: variant_calling_LS
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - longshot
+  - python==3.9
+  - bioconda::samtools
+  - bioconda::bcftools
+  - conda-forge::ncurses
