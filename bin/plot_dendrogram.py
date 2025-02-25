@@ -180,30 +180,6 @@ def load_distance_matrix(PATH: str, TREE_ORDER: list, ALL_V_ALL=False) -> np.mat
         return np.array(D, dtype='int'), LABELS
 
 
-def plot_distances(DIST: np.matrix, LABELS: list):
-    """
-    """
-    BAR_WIDTH = 0.95
-    fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(4, 12))
-    ax.barh(LABELS[::-1], DIST[::-1], height=BAR_WIDTH, color='k')
-
-    # Format axes
-    ax.tick_params(axis='both', direction='out')
-    ax.tick_params(axis='x', labelsize=10, labelrotation=20)
-    ax.spines['top'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.set_ylim([0-BAR_WIDTH, len(DIST)+BAR_WIDTH])
-    # ax.set_xticks([0, 20000, 40000, 60000, 80000, 100000, 120000])
-    # CURRENT_TICKS = ['{:,.0f}'.format(x) for x in ax.get_xticks()]
-    # ax.set_xticklabels(CURRENT_TICKS)
-
-    plt.ylabel('Isolate No.', fontsize=24)
-    plt.xlabel('SNP Distance', fontsize=24)
-    return fig
-
-
 # Define PATH
 PATH = sys.argv[1]
 DEST_PATH = sys.argv[2]
@@ -220,10 +196,3 @@ phylogeny, _ = load_phylogeny(PATH, 'corrected_tree.nwk')  # Reload to purge pre
 tree, ts = render_tree(phylogeny, MLST_PATH, cladogram=True)
 tree.render(DEST_PATH + 'cladogram.pdf', tree_style=ts)
 
-# Plot
-plt.rcParams['lines.linewidth'] = 0.25  # Forces style on dendrograms
-fig = plot_distances(Dm, Dm_labels)
-
-# Save figure
-fig.savefig(DEST_PATH + 'distances.pdf', format='pdf', bbox_inches='tight')
-plt.close(fig)
