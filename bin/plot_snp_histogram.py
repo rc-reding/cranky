@@ -32,7 +32,7 @@ def load_matrix(MATRIX_FNAME: str):
     return np.array(snp_data)[idx], np.matrix(snp_data), tuple(sample_id)
 
 
-def plot_snp_histogram(matrix_data: np.array, PATH: str):
+def plot_snp_histogram(matrix_data: np.array):
     """
     """
     fig = plt.figure(figsize=(5, 5))
@@ -46,12 +46,12 @@ def plot_snp_histogram(matrix_data: np.array, PATH: str):
     plt.ylabel('No. of Isolates', fontsize=14)
     plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0),
                          useMathText=True)
-    plt.savefig(PATH + 'snp_histogram.pdf', format='pdf',
+    plt.savefig('snp_histogram.pdf', format='pdf',
                 bbox_inches='tight')
     return
 
 
-def plot_distance_matrix(snp_data: np.array, sample_id: tuple, PATH: str):
+def plot_distance_matrix(snp_data: np.array, sample_id: tuple):
     """
     """
     fig = plt.figure(figsize=(5, 5))
@@ -88,12 +88,12 @@ def plot_distance_matrix(snp_data: np.array, sample_id: tuple, PATH: str):
     plt.ylabel('Sample ID', fontsize=14)
     ax.xaxis.set_label_position('top')
 
-    plt.savefig(PATH + 'distance_matrix.pdf', format='pdf',
+    plt.savefig('distance_matrix.pdf', format='pdf',
                 bbox_inches='tight')
     return
 
 
-def main(FNAME: str, OUTPUT_PATH: str):
+def main(FNAME: str):
     """
     
     """
@@ -101,13 +101,10 @@ def main(FNAME: str, OUTPUT_PATH: str):
     mx_data, snp_data, sample_id = load_matrix(FNAME)
 
     # Plot
-    plot_snp_histogram(mx_data, OUTPUT_PATH)
-    plot_distance_matrix(snp_data, sample_id, OUTPUT_PATH)
+    plot_snp_histogram(mx_data)
+    plot_distance_matrix(snp_data, sample_id)
     plt.close('all')
 
+
 if __name__ == '__main__':
-    FNAME = sys.argv[1]
-    PATH = sys.argv[2]
-    if PATH[-1] != str('/'):
-        PATH += str('/')
-    main(FNAME, PATH)
+    main(sys.argv[1])
