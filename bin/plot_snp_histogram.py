@@ -18,9 +18,10 @@ def load_matrix(MATRIX_FNAME: str):
     for row in file_content:
         # sample_id = row.split('\t')[0]
         if len(row.split('\t')) > 1:
-            sample_id.append(row.split('\t')[0].replace('barcode',
-                                                        '').replace('reference',
-                                                                    'Ref.').capitalize())
+            sample_name = row.split('\t')[0].replace('barcode', '')
+            sample_name = sample_name.replace('.vcf.gz', '')
+            sample_name = sample_name.replace('reference', 'Ref.')
+            sample_id.append(sample_name.capitalize())
         data = [int(i) for i in row.split('\t')[1:]]
         # matrix_data[sample_id] = data
         snp_data.append(data)
@@ -31,52 +32,68 @@ def load_matrix(MATRIX_FNAME: str):
     return np.array(snp_data)[idx], np.matrix(snp_data), tuple(sample_id)
 
 
-def plot_snp_histogram(matrix_data: np.array):
+def plot_snp_histogram(matrix_data: np.array, PATH: str):
     """
     """
-    fig = plt.figure(figsize=(5, 4))
+    fig = plt.figure(figsize=(5, 5))
     plt.hist(matrix_data, bins=50, rwidth=0.95)
+    plt.tight_layout()
+    
     # Labels
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.xlabel('No. of SNVs', fontsize=14)
     plt.ylabel('No. of Isolates', fontsize=14)
-    plt.savefig('/home/carlos/test1.pdf', format='pdf')
+    plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0),
+                         useMathText=True)
+    plt.savefig(PATH + 'snp_histogram.pdf', format='pdf',
+                bbox_inches='tight')
     return
 
 
-def plot_distance_matrix(snp_data: np.array, sample_id: tuple):
+def plot_distance_matrix(snp_data: np.array, sample_id: tuple, PATH: str):
     """
     """
-    fig = plt.figure(figsize=(5, 4))
+    fig = plt.figure(figsize=(5, 5))
+
     # Since matrix is symmetric, extract triangular
     # lower section of the matrix (including diag.)
-    idx = np.tril_indices(len(snp_data), -1)
-    #snp_data[idx] = -1
+    idx = np.triu_indices(len(snp_data), 1)
     snp_alpha = np.ones_like(snp_data, dtype='float')
-    snp_alpha[idx] = 0.25
+    snp_alpha[idx] = 0.0
+
     # Plot
-    plt.imshow(snp_data, alpha=snp_alpha, vmin=0, vmax=51, cmap='PuRd')
+    plt.pcolor(snp_data, alpha=snp_alpha, edgecolors='black',
+               linewidth=0.1, cmap='OrRd')
     ax = plt.gca()  # Get axis
+    
+    # Remove frame
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    
     # Major axis (for labels)
-    plt.xticks(ticks=np.arange(len(sample_id)), labels=sample_id,
-               rotation=90, fontsize=6)
-    plt.yticks(ticks=np.arange(len(sample_id)), labels=sample_id,
-               rotation=0, fontsize=6)
-    # Minor axis (for grid)
-    plt.xticks(ticks=np.arange(-0.5, len(sample_id) - 0.5), minor=True)
-    plt.yticks(ticks=np.arange(-0.5, len(sample_id) - 0.5), minor=True)
-    # Grid
-    ax.grid(which='minor', color='black', linewidth=0.25, alpha=1.0)
-    ax.tick_params(which='major', bottom=False, left=False)
+    ax.tick_params(which='major', labeltop=True,
+                   top=True, bottom=False, labelbottom=False)
+    plt.xticks(ticks=np.arange(len(sample_id)) + 0.5,
+               labels=sample_id, rotation=45,
+               fontsize=6, horizontalalignment='left')
+    plt.yticks(ticks=np.arange(len(sample_id)) + 0.5,
+               labels=sample_id, rotation=0,
+               fontsize=6)
+    
     # Labels
     plt.xlabel('Sample ID', fontsize=14)
     plt.ylabel('Sample ID', fontsize=14)
-    plt.savefig('/home/carlos/test2.pdf', format='pdf')
+    ax.xaxis.set_label_position('top')
+
+    plt.savefig(PATH + 'distance_matrix.pdf', format='pdf',
+                bbox_inches='tight')
     return
 
 
-def main(FNAME: str):
+def main(FNAME: str, OUTPUT_PATH: str):
     """
     
     """
@@ -84,9 +101,13 @@ def main(FNAME: str):
     mx_data, snp_data, sample_id = load_matrix(FNAME)
 
     # Plot
-    plot_snp_histogram(mx_data)
-    plot_distance_matrix(snp_data, sample_id)
-    plt.show()
+    plot_snp_histogram(mx_data, OUTPUT_PATH)
+    plot_distance_matrix(snp_data, sample_id, OUTPUT_PATH)
+    plt.close('all')
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    FNAME = sys.argv[1]
+    PATH = sys.argv[2]
+    if PATH[-1] != str('/'):
+        PATH += str('/')
+    main(FNAME, PATH)
