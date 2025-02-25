@@ -47,6 +47,7 @@ workflow reference_mapping {
     	asmbl = mapped_asmbl.bam
 		coverage = barcode_depth.cov
 		depth = barcode_depth.tsv
+		depth_asmbl = barcode_depth.depth
 }
 
 
@@ -69,6 +70,7 @@ workflow denovo_assembly{
 		asmbl = denovo.assembly
 		coverage = mapped.coverage
 		depth = mapped.depth
+		depth_asmbl = mapped.depth_asmbl
 }
 
 
@@ -97,17 +99,19 @@ workflow variant_caller {
 		asmbl
 		ref_genome
 		depth
+		depth_asmbl
 
 	// Main
 	main:
-        variants = VARIANT_CALL_CLAIR3(asmbl, ref_genome,
-										"$params.output/vcf")
+        variants = VARIANT_CALL_CLAIR3(asmbl.join(depth_asmbl),
+									   ref_genome, "$params.output/vcf")
+		variants.vcf.join(depth).join(depth_asmbl).view()
         //variants = VARIANT_CALL_LONGSHOT(asmbl, ref_genome,
 		//							     "$params.output/vcf")
 
-		consensus = GENERATE_CONSENSUS(variants.vcf.join(depth),
+		consensus = GENERATE_CONSENSUS(variants.vcf.join(depth).join(depth_asmbl),
 								       asmbl.map{it -> it[1]}, ref_genome,
-								       30, "$params.output/assembly/consensus")
+								       "$params.output/assembly/consensus")
 
 	// Output
 	emit:
@@ -255,9 +259,9 @@ workflow outbreaker {
 			asmbl = reference_mapping.out.asmbl
 			coverage = reference_mapping.out.coverage
 			depth = reference_mapping.out.depth
+			depth_asmbl = reference_mapping.out.depth_asmbl
 
-			
-			variant_caller(asmbl, ref_genome, depth)
+			variant_caller(asmbl, ref_genome, depth, depth_asmbl)
 			// Assign outputs
 			variants  = variant_caller.out.variants
 			consensus_seq  = variant_caller.out.consensus

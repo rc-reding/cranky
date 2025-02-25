@@ -8,6 +8,7 @@ process CALCULATE_COVERAGE_DEPTH {
 
 	output:
 	tuple val(barcode), env(COV), emit: cov
+	tuple val(barcode), env(DEPTH), emit: depth
 	tuple val(barcode), path("${barcode}_depth.csv"), emit: csv
 	tuple val(barcode), path("${barcode}_depth.tsv"), emit: tsv
 
@@ -17,11 +18,13 @@ process CALCULATE_COVERAGE_DEPTH {
 	python3 $params.bin/coverage_stats.py ${barcode}_depth.tsv ${barcode}
 	#COV=\$(tail -q -n1 coverage_stats.csv | cut -d ',' -f 8)
 	COV=\$(tail -q -n1 coverage_stats.csv | cut -d ',' -f 9)
+	DEPTH=\$(tail -q -n1 coverage_stats.csv | cut -d ',' -f 5)
 
 	# Round to 0 barcodes with COV << 1 to avoid
 	# inclusion, since BASH cannot handle them
 	if [[ \$COV == *"e-"* ]]; then
 		COV=0.0
+		DEPTH=0.0
 	fi
 
 	mv coverage_stats.csv ${barcode}_depth.csv
@@ -32,6 +35,7 @@ process CALCULATE_COVERAGE_DEPTH {
 	touch ${barcode}_depth.tsv
 	touch ${barcode}_depth.csv
 	COV=0
+	DEPTH=0
 	"""
 }
 

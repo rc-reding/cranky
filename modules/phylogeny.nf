@@ -3,19 +3,21 @@ process GENERATE_CONSENSUS {
 	publishDir "$outdir", mode: 'copy'
 
 	input:
-	tuple val(barcode), path(barcode_variant), path(barcode_depth)
+	tuple val(barcode), path(barcode_variant), path(barcode_depth), env(asmbl_depth)
 	path(assembly)
 	path(ref_genome)
-	val(min_depth)
 	val(outdir)
 
 	output:
 	tuple val(barcode), path("${barcode}.fa"), emit: fa
 
 	script:
+	DEPTH_THRESHOLD=0.85
 	"""
 	FNAME=\$(echo $barcode | cut -d'.' -f1)
-	awk '{if (\$3<$min_depth) print \$1"\t"\$2}' $barcode_depth > mask.txt
+	MIN_DEPTH=\$(bc -s <<< "\$asmbl_depth * $DEPTH_THRESHOLD")
+	
+	awk '{if (\$3<\$MIN_DEPTH) print \$1"\t"\$2}' $barcode_depth > mask.txt
 	tabix -p vcf $barcode_variant
 	bcftools consensus --mask mask.txt --fasta-ref $ref_genome --output ${barcode}.fa $barcode_variant
 	sed -i "s/>/>\$FNAME /" "${barcode}.fa"

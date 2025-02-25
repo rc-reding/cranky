@@ -85,7 +85,7 @@ process VARIANT_CALL_CLAIR3 {
 	publishDir "$outdir", mode: 'copy'
 
 	input:
-	tuple val(barcode), path(asmbl)
+	tuple val(barcode), path(asmbl), env(asmbl_depth)
 	path(ref_genome)
 	val(outdir)
 	
@@ -95,9 +95,12 @@ process VARIANT_CALL_CLAIR3 {
 	script:
 	//MDL_NAME='r1041_e82_400bps_sup_v500'
 	MDL_NAME='r941_prom_sup_g5014'
+	DEPTH_THRESHOLD=0.85
 	"""
 	samtools index $asmbl
 	samtools faidx $ref_genome
+	
+	MIN_DEPTH=\$(bc -sl <<< "\$asmbl_depth * ${DEPTH_THRESHOLD}")
 
 	# Run clair3	
 	run_clair3.sh \
@@ -106,7 +109,7 @@ process VARIANT_CALL_CLAIR3 {
 		--threads=${task.cpus} \
 		--platform="ont" \
 		--include_all_ctgs \
-		--min_coverage=25 \
+		--min_coverage=\$MIN_DEPTH \
 		--min_mq=15 \
 		--qual=25 \
 		--snp_min_af=0.85 \
