@@ -105,6 +105,5 @@ def main(FNAME: str):
     plot_distance_matrix(snp_data, sample_id)
     plt.close('all')
 
-
 if __name__ == '__main__':
     main(sys.argv[1])

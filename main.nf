@@ -15,7 +15,7 @@ include {GENERATE_CONSENSUS; PREALIGN_GENOMES; DISTANCE_MATRIX;
 		 ALIGN_FROM_VCF; GENERATE_PHYLOGENY_GUBBINS; GENERATE_PHYLOGENY;
 		 CORRECT_RECOMBINATION} from './modules/phylogeny.nf'
 
-include {PLOT_PHYLOGENY; PLOT_QC; PLOT_COVERAGE} from './modules/plot_figures.nf'
+include {PLOT_PHYLOGENY; PLOT_SNP_DISTANCES; PLOT_QC; PLOT_COVERAGE} from './modules/plot_figures.nf'
 
 
 // MERGE BARCODES IF MULTIPLE RUNS PER BARCODE
@@ -225,6 +225,7 @@ workflow phylogeny {
 			dist_wo_controls.snp.collect()
 
 			// Plot
+			PLOT_SNP_DISTANCES(dist_wo_controls.snp, "$params.output/phylogeny")
 			PLOT_PHYLOGENY("$params.output/phylogeny", phy.tree,
 					       "$params.output/mlst", "$params.output/phylogeny")
 		}

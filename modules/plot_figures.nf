@@ -11,16 +11,42 @@ process PLOT_PHYLOGENY {
 	output:
 	path("phylogeny.pdf"), emit: phylogeny
 	path("cladogram.pdf"), emit: cladogram
-	path("distances.pdf"), emit: distances
+	path("snp_histogram.pdf"), emit: snp_hist
+	path("distance_matrix.pdf"), emit: dist_matrix
 
 	script:
 	"""
 	python3 $params.bin/plot_dendrogram.py $phylogeny_dir/ ./ $mlst_dir/
+	python3 $params.bin/plot_snp_histogram.py $phylogeny_dir/no_controls/distance_matrix.tsv \
+										   $phylogeny_dir
 	"""
 
 	stub:
 	"""
-	touch phylogeny.pdf cladogram.pdf distances.pdf
+	touch phylogeny.pdf cladogram.pdf snp_histogram.pdf distance_matrix.pdf
+	"""
+}
+
+process PLOT_SNP_DISTANCES {
+	label "phylogeny_gubbins"
+	publishDir "$outdir", mode: 'copy'
+
+	input:
+	path(snp_dists) 
+	val(outdir)
+
+	output:
+	path("snp_histogram.pdf"), emit: snp_hist
+	path("distance_matrix.pdf"), emit: dist_matrix
+
+	script:
+	"""
+	python3 $params.bin/plot_snp_histogram.py $snp_dists $outdir
+	"""
+
+	stub:
+	"""
+	touch snp_histogram.pdf distance_matrix.pdf
 	"""
 }
 
