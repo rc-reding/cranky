@@ -1,4 +1,4 @@
-include {MERGE_BARCODES} from './modules/barcode_processing.nf'
+include { MERGE_BARCODES } from './modules/barcode_processing.nf'
 
 include {ASSEMBLE_ONT; MAP_REFERENCE; VARIANT_CALL_CLAIR3;
 		 VARIANT_CALL_SAMTOOLS; VARIANT_CALL_LONGSHOT} from './modules/assembly.nf'
@@ -105,7 +105,6 @@ workflow variant_caller {
 	main:
         variants = VARIANT_CALL_CLAIR3(asmbl.join(depth_asmbl),
 									   ref_genome, "$params.output/vcf")
-		variants.vcf.join(depth).join(depth_asmbl).view()
         //variants = VARIANT_CALL_LONGSHOT(asmbl, ref_genome,
 		//							     "$params.output/vcf")
 
@@ -138,19 +137,19 @@ workflow MLST {
 		    FIND_MLST_REF(tuple("reference", ref_genome), "$params.output/mlst")
 			MLST = FIND_MLST(consensus, "$params.output/mlst")
 			// Whole-Genome MLST (wgMLST) - NOTE: Requires a reference genome in the DB
-			wgMLST = FIND_wgMLST(consensus.collect(), "$params.output/assembly/consensus",
-								 ref_genome, "$params.output/mlst/wgmlst")
+			//wgMLST = FIND_wgMLST(consensus.collect(), "$params.output/assembly/consensus",
+			//					 ref_genome, "$params.output/mlst/wgmlst")
 		}
 
-		wgMLST.msa.collect()
-		wgMLST.msa_wo_controls.collect()
+		// wgMLST.msa.collect()
+		// wgMLST.msa_wo_controls.collect()
 		MLST.mlst.collect()
 							
 	// Output
 	emit:
 		classic = MLST.mlst
-		wgMLST_msa = wgMLST.msa
-		wgMLST_msa_wo_controls = wgMLST.msa_wo_controls
+		//wgMLST_msa = wgMLST.msa
+		//wgMLST_msa_wo_controls = wgMLST.msa_wo_controls
 }
 
 
@@ -167,8 +166,8 @@ workflow phylogeny {
 		MLST = MLST(consensus, ref_genome)
 		// Assign outputs
 		MLST_classic = MLST.classic
-		wgMLST_msa = MLST.wgMLST_msa  // Used to compute SNP distance
-		wgMLST_msa_wo_controls = MLST.wgMLST_msa_wo_controls  // Used to compute SNP distance
+		//wgMLST_msa = MLST.wgMLST_msa  // Used to compute SNP distance
+		//wgMLST_msa_wo_controls = MLST.wgMLST_msa_wo_controls  // Used to compute SNP distance
 
 
 		// Gubbins allows SH-test, ClonalFrameML does not.
