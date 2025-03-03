@@ -1,5 +1,7 @@
 include { MERGE_BARCODES } from './modules/barcode_processing.nf'
 
+include { SPECIES_PROFILING_ONT } from './modules/species_screening.nf'
+
 include {ASSEMBLE_ONT; MAP_REFERENCE; VARIANT_CALL_CLAIR3;
 		 VARIANT_CALL_SAMTOOLS; VARIANT_CALL_LONGSHOT} from './modules/assembly.nf'
 
@@ -241,6 +243,9 @@ workflow outbreaker {
 	// Main
 	main:
 		filtered_reads = quality_control()
+		SPECIES_PROFILING_ONT(filtered_reads, "$params.output/sp_report",
+						      "$params.output/sp_report/results")
+
 
 		if ( "$params.whole_genome" == true ) {
 			denovo_assembly(filtered_reads)
