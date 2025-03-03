@@ -95,7 +95,7 @@ process VARIANT_CALL_CLAIR3 {
 	script:
 	//MDL_NAME='r1041_e82_400bps_sup_v500'
 	MDL_NAME='r941_prom_sup_g5014'
-	DEPTH_THRESHOLD=0.85
+	DEPTH_THRESHOLD=0.5
 	"""
 	samtools index $asmbl
 	samtools faidx $ref_genome

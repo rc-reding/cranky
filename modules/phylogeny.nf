@@ -12,7 +12,7 @@ process GENERATE_CONSENSUS {
 	tuple val(barcode), path("${barcode}.fa"), emit: fa
 
 	script:
-	DEPTH_THRESHOLD=0.85
+	DEPTH_THRESHOLD=0.5
 	"""
 	FNAME=\$(echo $barcode | cut -d'.' -f1)
 	MIN_DEPTH=\$(bc -s <<< "\$asmbl_depth * $DEPTH_THRESHOLD")
